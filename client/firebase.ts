@@ -18,13 +18,19 @@ const firebaseConfig = {
   measurementId: "",
 };
 
-// Initialize Firebase
-// const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
+// --- KODE MOCK UNTUK BYPASS FIREBASE ---
 
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
-const githubProvider = new GithubAuthProvider();
+// Kita buat objek kosong agar file lain yang meng-import tidak error
+const db: any = {}; 
+const auth: any = {
+  currentUser: null,
+  onAuthStateChanged: (callback: any) => {
+    // Berpura-pura tidak ada user yang login agar tidak memicu error auth
+    return () => {};
+  }
+};
+const googleProvider = {};
+const githubProvider = {};
+
+// Export kembali variabel yang dibutuhkan aplikasi
 export { db, auth, googleProvider, githubProvider };
