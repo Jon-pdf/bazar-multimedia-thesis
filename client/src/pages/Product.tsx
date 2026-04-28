@@ -183,11 +183,9 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useLocation } from "react-router";
-// import { useDispatch } from "react-redux"; // Dinonaktifkan sementara agar build lolos
-// import { addToCart } from "../redux/bazarSlice"; // Dinonaktifkan sementara agar build lolos
 import toast from "react-hot-toast";
 import Container from "@/components/Container";
-import { Box, Image as ImageIcon, Loader2, Info } from "lucide-react"; // SUDAH DIPERBAIKI: lucide-react
+import { Box, Image as ImageIcon, Loader2, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Spline from '@splinetool/react-spline';
 
@@ -199,21 +197,18 @@ const Product = () => {
   
   const splineRef = useRef<any>(null);
   const location = useLocation();
-  // const dispatch = useDispatch(); // Dinonaktifkan sementara agar build lolos
 
-  // --- FUNGSI RESET (Memaksa objek balik ke warna asal) ---
+  // --- RESET INTERAKSI ---
   const forceReset = useCallback(() => {
     setActiveInfo(null);
     document.body.style.cursor = 'default';
-    
     if (splineRef.current) {
-      // Kita panggil perintah reset paksa untuk objek yang ada
       splineRef.current.emitEvent('mouseOut', 'airpods_max_silver_earbuds');
       splineRef.current.emitEvent('mouseOut', 'Strap'); 
     }
   }, []);
 
-  // --- HANDLER INTERAKSI (Mengenali Headphone & Jam Tangan) ---
+  // --- HANDLER EVENT (Kunci Munculnya Teks) ---
   const handleSplineEvent = useCallback((e: any) => {
     const name = e.target.name;
 
@@ -230,14 +225,9 @@ const Product = () => {
     }
   }, [forceReset]);
 
-  // --- PEMILIHAN SCENE (Berdasarkan Judul Produk) ---
   const getSplineScene = () => {
     const title = product?.title?.toLowerCase() || "";
-    
-    if (title.includes("watch")) {
-      return "https://prod.spline.design/G4Q-UhZG7npUYKZc/scene.splinecode";
-    }
-    
+    if (title.includes("watch")) return "https://prod.spline.design/G4Q-UhZG7npUYKZc/scene.splinecode";
     return "https://prod.spline.design/Wvnl8OOb5nGSW8nU/scene.splinecode";
   };
 
@@ -246,7 +236,7 @@ const Product = () => {
     return () => { document.body.style.cursor = 'default'; };
   }, [location]);
 
-  if (!product) return <div className="py-20 text-center font-bold text-gray-400 uppercase tracking-widest">Loading...</div>;
+  if (!product) return <div className="py-20 text-center font-bold text-gray-400 uppercase">Loading...</div>;
 
   return (
     <div className="pb-20">
@@ -255,7 +245,7 @@ const Product = () => {
         {/* AREA VISUALISASI */}
         <div className="w-full md:w-2/5 relative rounded-2xl border bg-white overflow-hidden shadow-2xl h-[550px]">
           
-          <div className="absolute top-6 left-6 z-50 flex gap-2">
+          <div className="absolute top-6 left-6 z-[100] flex gap-2">
             <Button variant={!is3DMode ? "default" : "outline"} size="sm" onClick={() => { setIs3DMode(false); forceReset(); }}>
               <ImageIcon className="w-4 h-4 mr-2" /> 2D
             </Button>
@@ -264,22 +254,26 @@ const Product = () => {
             </Button>
           </div>
 
-          {/* TOOLTIP INDIGO */}
+          {/* INFORMASI INDIGO (Ditingkatkan Z-Index-nya ke 1000) */}
           {is3DMode && activeInfo && (
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[60] w-[90%] pointer-events-none animate-in fade-in slide-in-from-bottom-5 duration-300">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] w-[92%] pointer-events-none animate-in fade-in slide-in-from-bottom-5 duration-300">
               <div className="bg-indigo-950/95 backdrop-blur-md text-white p-5 rounded-2xl shadow-2xl border border-indigo-400/30 flex items-start gap-4">
                 <Info className="w-6 h-6 text-indigo-300 shrink-0 mt-1" />
-                <p className="text-sm leading-relaxed flex-1 font-medium italic">{activeInfo}</p>
+                <p className="text-sm leading-relaxed flex-1 font-medium italic">
+                  {activeInfo}
+                </p>
               </div>
             </div>
           )}
 
           {is3DMode ? (
-            <div className="w-full h-full" onMouseLeave={forceReset}>
+            <div className="w-full h-full relative" onMouseLeave={forceReset}>
               {isLoading3D && (
-                <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-white">
+                <div className="absolute inset-0 z-[50] flex flex-col items-center justify-center bg-white">
                   <Loader2 className="w-12 h-12 text-indigo-600 animate-spin" />
-                  <p className="mt-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Initialising 3D Scene...</p>
+                  <p className="mt-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center px-4">
+                    Preparing 3D Research Object...
+                  </p>
                 </div>
               )}
               <Spline 
@@ -292,7 +286,7 @@ const Product = () => {
               />
             </div>
           ) : (
-            <div className="w-full h-full p-10 flex items-center justify-center bg-gray-50/30 text-center">
+            <div className="w-full h-full p-10 flex items-center justify-center bg-gray-50/30">
               <img className="max-h-full object-contain drop-shadow-xl" src={product?.image} alt={product?.title} />
             </div>
           )}
@@ -303,7 +297,7 @@ const Product = () => {
           <div>
             <h1 className="text-4xl font-black text-gray-900 tracking-tight">{product?.title}</h1>
             <span className="inline-block mt-2 bg-indigo-600 text-white text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest">
-              Interactive Research Object
+              Multimedia Comparative Study
             </span>
           </div>
 
@@ -315,10 +309,7 @@ const Product = () => {
 
           <Button 
             size="lg" 
-            onClick={() => { 
-              // dispatch(addToCart({ ...product, quantity: 1 })); // Uncomment jika sudah ingin digunakan
-              toast.success(`${product.title} added to cart!`); 
-            }} 
+            onClick={() => { toast.success(`${product.title} added to cart!`); }} 
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-8 text-lg font-bold rounded-2xl shadow-xl transition-all active:scale-95 uppercase tracking-widest"
           >
             Add to Cart
@@ -326,7 +317,7 @@ const Product = () => {
 
           <div className="flex items-center gap-2 text-gray-400 border-t pt-4">
              <Info className="w-4 h-4" />
-             <p className="text-[10px] font-bold uppercase tracking-widest italic">Arahkan kursor ke objek 3D untuk detail interaktif.</p>
+             <p className="text-[10px] font-bold uppercase tracking-widest italic">Arahkan kursor ke objek 3D untuk detail teknis.</p>
           </div>
         </div>
       </Container>
