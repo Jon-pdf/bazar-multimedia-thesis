@@ -185,7 +185,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useLocation } from "react-router";
 import toast from "react-hot-toast";
 import Container from "@/components/Container";
-import { Box, Image as ImageIcon, Loader2, Info } from "lucide-react";
+import { Box, Image, Loader2, Info } from "lucide-react"; // VERSI AMAN
 import { Button } from "@/components/ui/button";
 import Spline from '@splinetool/react-spline';
 
@@ -198,7 +198,6 @@ const Product = () => {
   const splineRef = useRef<any>(null);
   const location = useLocation();
 
-  // --- RESET INTERAKSI ---
   const forceReset = useCallback(() => {
     setActiveInfo(null);
     document.body.style.cursor = 'default';
@@ -208,19 +207,15 @@ const Product = () => {
     }
   }, []);
 
-  // --- HANDLER EVENT (Kunci Munculnya Teks) ---
   const handleSplineEvent = useCallback((e: any) => {
     const name = e.target.name;
-
     if (name === 'airpods_max_silver_earbuds') {
       document.body.style.cursor = 'pointer';
-      setActiveInfo("☁️ Soft Memory Foam: Bantalan premium untuk kenyamanan maksimal dan isolasi suara.");
-    } 
-    else if (name === 'Strap') {
+      setActiveInfo("☁️ Soft Memory Foam: Bantalan premium untuk kenyamanan maksimal.");
+    } else if (name === 'Strap') {
       document.body.style.cursor = 'pointer';
-      setActiveInfo("⌚ Premium Silicone Strap: Bahan fleksibel dan tahan keringat, nyaman untuk olahraga.");
-    }
-    else {
+      setActiveInfo("⌚ Premium Silicone Strap: Bahan fleksibel dan nyaman.");
+    } else {
       forceReset();
     }
   }, [forceReset]);
@@ -232,36 +227,38 @@ const Product = () => {
   };
 
   useEffect(() => {
-    if (location.state?.item) setProduct(location.state.item);
-    return () => { document.body.style.cursor = 'default'; };
+    if (location.state?.item) {
+      setProduct(location.state.item);
+    }
   }, [location]);
 
-  if (!product) return <div className="py-20 text-center font-bold text-gray-400 uppercase">Loading...</div>;
+  // Jika produk belum ada, tampilkan loading sederhana (biar gak blank putih)
+  if (!product) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-white">
+        <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="pb-20">
       <Container className="my-10 flex flex-col md:flex-row gap-10">
-        
-        {/* AREA VISUALISASI */}
         <div className="w-full md:w-2/5 relative rounded-2xl border bg-white overflow-hidden shadow-2xl h-[550px]">
-          
           <div className="absolute top-6 left-6 z-[100] flex gap-2">
             <Button variant={!is3DMode ? "default" : "outline"} size="sm" onClick={() => { setIs3DMode(false); forceReset(); }}>
-              <ImageIcon className="w-4 h-4 mr-2" /> 2D
+              <Image className="w-4 h-4 mr-2" /> 2D
             </Button>
             <Button variant={is3DMode ? "default" : "outline"} size="sm" onClick={() => setIs3DMode(true)}>
               <Box className="w-4 h-4 mr-2" /> 3D View
             </Button>
           </div>
 
-          {/* INFORMASI INDIGO (Ditingkatkan Z-Index-nya ke 1000) */}
           {is3DMode && activeInfo && (
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] w-[92%] pointer-events-none animate-in fade-in slide-in-from-bottom-5 duration-300">
-              <div className="bg-indigo-950/95 backdrop-blur-md text-white p-5 rounded-2xl shadow-2xl border border-indigo-400/30 flex items-start gap-4">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] w-[92%] pointer-events-none animate-in fade-in slide-in-from-bottom-5">
+              <div className="bg-indigo-950/95 backdrop-blur-md text-white p-5 rounded-2xl shadow-2xl flex items-start gap-4">
                 <Info className="w-6 h-6 text-indigo-300 shrink-0 mt-1" />
-                <p className="text-sm leading-relaxed flex-1 font-medium italic">
-                  {activeInfo}
-                </p>
+                <p className="text-sm italic">{activeInfo}</p>
               </div>
             </div>
           )}
@@ -271,9 +268,7 @@ const Product = () => {
               {isLoading3D && (
                 <div className="absolute inset-0 z-[50] flex flex-col items-center justify-center bg-white">
                   <Loader2 className="w-12 h-12 text-indigo-600 animate-spin" />
-                  <p className="mt-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center px-4">
-                    Preparing 3D Research Object...
-                  </p>
+                  <p className="mt-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Loading 3D...</p>
                 </div>
               )}
               <Spline 
@@ -287,38 +282,20 @@ const Product = () => {
             </div>
           ) : (
             <div className="w-full h-full p-10 flex items-center justify-center bg-gray-50/30">
-              <img className="max-h-full object-contain drop-shadow-xl" src={product?.image} alt={product?.title} />
+              <img className="max-h-full object-contain" src={product?.image} alt={product?.title} />
             </div>
           )}
         </div>
 
-        {/* DETAIL PRODUK */}
         <div className="w-full md:w-3/5 space-y-8">
-          <div>
-            <h1 className="text-4xl font-black text-gray-900 tracking-tight">{product?.title}</h1>
-            <span className="inline-block mt-2 bg-indigo-600 text-white text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest">
-              Multimedia Comparative Study
-            </span>
+          <h1 className="text-4xl font-black text-gray-900">{product?.title}</h1>
+          <p className="text-4xl font-black text-indigo-600">${product?.price?.toFixed(2)}</p>
+          <div className="bg-indigo-50/50 p-6 rounded-2xl border-l-4 border-indigo-500 italic">
+            "{product?.description}"
           </div>
-
-          <p className="text-4xl font-black text-indigo-600">${product.price.toFixed(2)}</p>
-          
-          <div className="bg-indigo-50/50 p-6 rounded-2xl border-l-4 border-indigo-500 text-gray-700 italic">
-            "{product.description}"
-          </div>
-
-          <Button 
-            size="lg" 
-            onClick={() => { toast.success(`${product.title} added to cart!`); }} 
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-8 text-lg font-bold rounded-2xl shadow-xl transition-all active:scale-95 uppercase tracking-widest"
-          >
+          <Button size="lg" onClick={() => toast.success("Added to cart!")} className="bg-indigo-600 text-white px-12 py-8 rounded-2xl uppercase font-bold">
             Add to Cart
           </Button>
-
-          <div className="flex items-center gap-2 text-gray-400 border-t pt-4">
-             <Info className="w-4 h-4" />
-             <p className="text-[10px] font-bold uppercase tracking-widest italic">Arahkan kursor ke objek 3D untuk detail teknis.</p>
-          </div>
         </div>
       </Container>
     </div>
