@@ -123,6 +123,7 @@
 // export default Product;
 
 // src/pages/Product.tsx
+
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useLocation } from "react-router";
 import toast from "react-hot-toast";
@@ -144,6 +145,7 @@ const Product = () => {
     setActiveInfo(null);
     document.body.style.cursor = 'default';
     if (splineRef.current) {
+      // Membersihkan event hover pada objek spesifik jika ada
       splineRef.current.emitEvent('mouseOut', 'airpods_max_silver_earbuds');
       splineRef.current.emitEvent('mouseOut', 'Strap'); 
     }
@@ -162,10 +164,20 @@ const Product = () => {
     }
   }, [forceReset]);
 
+  // Fungsi untuk mendapatkan scene 3D berdasarkan judul produk
   const getSplineScene = () => {
     const title = product?.title?.toLowerCase() || "";
-    if (title.includes("watch")) return "https://prod.spline.design/G4Q-UhZG7npUYKZc/scene.splinecode";
-    return "https://prod.spline.design/Wvnl8OOb5nGSW8nU/scene.splinecode";
+    
+    // Logika pemilihan aset yang tersedia
+    if (title.includes("watch")) {
+      return "https://prod.spline.design/G4Q-UhZG7npUYKZc/scene.splinecode";
+    }
+    if (title.includes("headphones") || title.includes("headset")) {
+      return "https://prod.spline.design/Wvnl8OOb5nGSW8nU/scene.splinecode";
+    }
+    
+    // Jika produk lain, kembalikan null agar sistem tahu aset belum tersedia
+    return null;
   };
 
   useEffect(() => {
@@ -182,11 +194,13 @@ const Product = () => {
     );
   }
 
+  const currentScene = getSplineScene();
+
   return (
     <div className="pb-20">
       <Container className="my-10 flex flex-col items-center">
         
-        {/* 1. HEADER AREA: Judul, Harga, & Info Penelitian (Centered) */}
+        {/* 1. HEADER AREA: Terpusat untuk meminimalkan bias kognitif responden */}
         <div className="w-full max-w-4xl text-center space-y-4 mb-10">
           <h1 className="text-5xl font-black text-gray-900 uppercase tracking-tighter">
             {product?.title}
@@ -203,10 +217,10 @@ const Product = () => {
           </div>
         </div>
 
-        {/* 2. VISUAL AREA: Toggle Buttons & Large Image/3D (3/4 Screen Height) */}
+        {/* 2. VISUAL AREA: Area rendering utama (3/4 Screen Height) */}
         <div className="w-full max-w-6xl space-y-6 flex flex-col items-center">
           
-          {/* Toggle Buttons */}
+          {/* Toggle Buttons untuk berpindah antara 2D dan 3D */}
           <div className="flex gap-4 p-1.5 bg-gray-100 rounded-full shadow-inner">
             <Button 
               variant={!is3DMode ? "default" : "ghost"} 
@@ -218,17 +232,17 @@ const Product = () => {
             <Button 
               variant={is3DMode ? "default" : "ghost"} 
               className={`rounded-full px-8 ${is3DMode ? "bg-indigo-600 text-white shadow-md" : "text-gray-500"}`}
-              onClick={() => setIs3DMode(true)}
+              onClick={() => { setIs3DMode(true); setIsLoading3D(true); }}
             >
               <Box className="w-4 h-4 mr-2" /> 3D INTERACTIVE
             </Button>
           </div>
 
-          {/* Large Viewer (Area 3/4 Layar) */}
+          {/* Large Viewer: Mengisi 3/4 layar untuk visualisasi mendalam [cite: 17, 314] */}
           <div className="w-full h-[70vh] md:h-[75vh] relative rounded-3xl border-2 border-gray-100 bg-white overflow-hidden shadow-2xl group">
             
-            {/* Hotspot Info Tooltip (Only in 3D) */}
-            {is3DMode && activeInfo && (
+            {/* Tooltip Hotspot: Muncul saat interaksi 3D pada objek tertentu */}
+            {is3DMode && activeInfo && currentScene && (
               <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[1000] w-[90%] md:w-[60%] pointer-events-none animate-in fade-in slide-in-from-bottom-5">
                 <div className="bg-indigo-950/95 backdrop-blur-md text-white p-6 rounded-2xl shadow-2xl flex items-center gap-4 border border-white/10">
                   <Info className="w-8 h-8 text-indigo-300 shrink-0" />
@@ -239,22 +253,35 @@ const Product = () => {
 
             {is3DMode ? (
               <div className="w-full h-full relative" onMouseLeave={forceReset}>
-                {isLoading3D && (
-                  <div className="absolute inset-0 z-[50] flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
-                    <Loader2 className="w-16 h-16 text-indigo-600 animate-spin" />
-                    <p className="mt-4 text-xs font-black text-indigo-900 uppercase tracking-[0.3em]">Calibrating 3D Experience...</p>
+                {currentScene ? (
+                  <>
+                    {/* State Loading: Penting untuk menjaga atensi user selama WebGL dimuat [cite: 59] */}
+                    {isLoading3D && (
+                      <div className="absolute inset-0 z-[50] flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
+                        <Loader2 className="w-16 h-16 text-indigo-600 animate-spin" />
+                        <p className="mt-4 text-xs font-black text-indigo-900 uppercase tracking-[0.3em]">Calibrating 3D Experience...</p>
+                      </div>
+                    )}
+                    <Spline 
+                      scene={currentScene} 
+                      onLoad={(splineApp) => {
+                        splineRef.current = splineApp;
+                        splineApp.addEventListener('mouseHover', handleSplineEvent);
+                        setIsLoading3D(false);
+                      }}
+                    />
+                  </>
+                ) : (
+                  /* Pesan ketersediaan aset: Menghindari disinformasi visual bagi responden */
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 text-gray-400">
+                    <Box className="w-24 h-24 mb-6 opacity-10" />
+                    <h3 className="text-2xl font-black uppercase tracking-tighter text-gray-300">3D Model Belum Tersedia</h3>
+                    <p className="text-sm font-medium mt-2">Maaf, objek penelitian ini baru tersedia dalam versi 2D.</p>
                   </div>
                 )}
-                <Spline 
-                  scene={getSplineScene()} 
-                  onLoad={(splineApp) => {
-                    splineRef.current = splineApp;
-                    splineApp.addEventListener('mouseHover', handleSplineEvent);
-                    setIsLoading3D(false);
-                  }}
-                />
               </div>
             ) : (
+              /* Mode 2D Standar: Sebagai perbandingan kontrol dalam riset UX */
               <div className="w-full h-full p-12 flex items-center justify-center bg-gray-50/30">
                 <img 
                   className="max-h-full max-w-full object-contain drop-shadow-2xl animate-in zoom-in-95 duration-500" 
@@ -266,7 +293,7 @@ const Product = () => {
           </div>
         </div>
 
-        {/* 3. ACTION AREA: Add to Cart (Centered at bottom) */}
+        {/* 3. ACTION AREA: Tombol beli untuk simulasi alur e-commerce lengkap */}
         <div className="mt-12">
           <Button 
             size="lg" 
