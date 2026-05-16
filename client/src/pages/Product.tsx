@@ -244,8 +244,8 @@ const Product = () => {
             </Button>
           </div>
 
-          {/* KOTAK VISUALISASI DIOPTIMASI UNTUK MOBILE & TABLET */}
-          <div className="w-full h-[35vh] md:h-[45vh] lg:h-[75vh] relative rounded-3xl border-2 border-gray-100 bg-white overflow-hidden shadow-2xl group">
+          {/* KOTAK VISUALISASI DIKECILKAN LAGI KHUSUS MOBILE & TABLET */}
+          <div className="w-full h-[30vh] md:h-[38vh] lg:h-[75vh] relative rounded-3xl border-2 border-gray-100 bg-white overflow-hidden shadow-2xl group">
             
             {/* Tooltip Hotspot */}
             {is3DMode && activeInfo && currentScene && (
