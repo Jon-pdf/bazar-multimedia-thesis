@@ -145,20 +145,28 @@ const Product = () => {
     setActiveInfo(null);
     document.body.style.cursor = 'default';
     if (splineRef.current) {
-      // Membersihkan event hover pada objek spesifik jika ada
+      // Membersihkan event hover pada objek headphone dan smartwatch
       splineRef.current.emitEvent('mouseOut', 'airpods_max_silver_earbuds');
       splineRef.current.emitEvent('mouseOut', 'Strap'); 
+      splineRef.current.emitEvent('mouseOut', 'Screen'); 
     }
   }, []);
 
   const handleSplineEvent = useCallback((e: any) => {
     const name = e.target.name;
+    
+    // Interaksi untuk Headphone
     if (name === 'airpods_max_silver_earbuds') {
       document.body.style.cursor = 'pointer';
       setActiveInfo("☁️ Soft Memory Foam: Bantalan premium untuk kenyamanan maksimal.");
-    } else if (name === 'Strap') {
+    } 
+    // Interaksi untuk Smartwatch (Strap & Screen)
+    else if (name === 'Strap') {
       document.body.style.cursor = 'pointer';
-      setActiveInfo("⌚ Premium Silicone Strap: Bahan fleksibel dan nyaman.");
+      setActiveInfo("⌚ Premium Silicone Strap: Bahan fleksibel, tahan keringat, dan nyaman di pergelangan.");
+    } else if (name === 'Screen' || name === 'Watch_Face') { 
+      document.body.style.cursor = 'pointer';
+      setActiveInfo("📱 AMOLED Display: Layar sentuh responsif dengan visibilitas tinggi.");
     } else {
       forceReset();
     }
@@ -168,7 +176,6 @@ const Product = () => {
   const getSplineScene = () => {
     const title = product?.title?.toLowerCase() || "";
     
-    // Logika pemilihan aset yang tersedia
     if (title.includes("watch")) {
       return "https://prod.spline.design/G4Q-UhZG7npUYKZc/scene.splinecode";
     }
@@ -176,7 +183,6 @@ const Product = () => {
       return "https://prod.spline.design/Wvnl8OOb5nGSW8nU/scene.splinecode";
     }
     
-    // Jika produk lain, kembalikan null agar sistem tahu aset belum tersedia
     return null;
   };
 
@@ -200,7 +206,7 @@ const Product = () => {
     <div className="pb-20">
       <Container className="my-10 flex flex-col items-center">
         
-        {/* 1. HEADER AREA: Terpusat untuk meminimalkan bias kognitif responden */}
+        {/* 1. HEADER AREA */}
         <div className="w-full max-w-4xl text-center space-y-4 mb-10">
           <h1 className="text-5xl font-black text-gray-900 uppercase tracking-tighter">
             {product?.title}
@@ -217,10 +223,10 @@ const Product = () => {
           </div>
         </div>
 
-        {/* 2. VISUAL AREA: Area rendering utama (3/4 Screen Height) */}
+        {/* 2. VISUAL AREA */}
         <div className="w-full max-w-6xl space-y-6 flex flex-col items-center">
           
-          {/* Toggle Buttons untuk berpindah antara 2D dan 3D */}
+          {/* Toggle Buttons */}
           <div className="flex gap-4 p-1.5 bg-gray-100 rounded-full shadow-inner">
             <Button 
               variant={!is3DMode ? "default" : "ghost"} 
@@ -238,10 +244,10 @@ const Product = () => {
             </Button>
           </div>
 
-          {/* Large Viewer: Mengisi 3/4 layar untuk visualisasi mendalam [cite: 17, 314] */}
-          <div className="w-full h-[70vh] md:h-[75vh] relative rounded-3xl border-2 border-gray-100 bg-white overflow-hidden shadow-2xl group">
+          {/* KOTAK VISUALISASI DIOPTIMASI UNTUK MOBILE & TABLET */}
+          <div className="w-full h-[35vh] md:h-[45vh] lg:h-[75vh] relative rounded-3xl border-2 border-gray-100 bg-white overflow-hidden shadow-2xl group">
             
-            {/* Tooltip Hotspot: Muncul saat interaksi 3D pada objek tertentu */}
+            {/* Tooltip Hotspot */}
             {is3DMode && activeInfo && currentScene && (
               <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[1000] w-[90%] md:w-[60%] pointer-events-none animate-in fade-in slide-in-from-bottom-5">
                 <div className="bg-indigo-950/95 backdrop-blur-md text-white p-6 rounded-2xl shadow-2xl flex items-center gap-4 border border-white/10">
@@ -255,7 +261,7 @@ const Product = () => {
               <div className="w-full h-full relative" onMouseLeave={forceReset}>
                 {currentScene ? (
                   <>
-                    {/* State Loading: Penting untuk menjaga atensi user selama WebGL dimuat [cite: 59] */}
+                    {/* State Loading */}
                     {isLoading3D && (
                       <div className="absolute inset-0 z-[50] flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
                         <Loader2 className="w-16 h-16 text-indigo-600 animate-spin" />
@@ -272,7 +278,6 @@ const Product = () => {
                     />
                   </>
                 ) : (
-                  /* Pesan ketersediaan aset: Menghindari disinformasi visual bagi responden */
                   <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 text-gray-400">
                     <Box className="w-24 h-24 mb-6 opacity-10" />
                     <h3 className="text-2xl font-black uppercase tracking-tighter text-gray-300">3D Model Belum Tersedia</h3>
@@ -281,7 +286,6 @@ const Product = () => {
                 )}
               </div>
             ) : (
-              /* Mode 2D Standar: Sebagai perbandingan kontrol dalam riset UX */
               <div className="w-full h-full p-12 flex items-center justify-center bg-gray-50/30">
                 <img 
                   className="max-h-full max-w-full object-contain drop-shadow-2xl animate-in zoom-in-95 duration-500" 
@@ -293,7 +297,7 @@ const Product = () => {
           </div>
         </div>
 
-        {/* 3. ACTION AREA: Tombol beli untuk simulasi alur e-commerce lengkap */}
+        {/* 3. ACTION AREA */}
         <div className="mt-12">
           <Button 
             size="lg" 
