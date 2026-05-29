@@ -155,7 +155,7 @@ const Product = () => {
   const handleSplineEvent = useCallback((e: any) => {
     const name = e.target.name;
     
-    // Interaksi untuk Headphone
+    // Interaksi untuk Headphone (Hanya mendeteksi earcup kanan yang sudah di-rename)
     if (name === 'airpods_max_silver_earbuds') {
       document.body.style.cursor = 'pointer';
       setActiveInfo("☁️ Soft Memory Foam: Bantalan premium untuk kenyamanan maksimal.");
@@ -180,7 +180,8 @@ const Product = () => {
       return "https://prod.spline.design/G4Q-UhZG7npUYKZc/scene.splinecode";
     }
     if (title.includes("headphones") || title.includes("headset")) {
-      return "https://prod.spline.design/Wvnl8OOb5nGSW8nU/scene.splinecode";
+      // Menggunakan link baru yang ringan dan sudah di-optimize untuk mobile/tablet
+      return "https://prod.spline.design/LsZgeVTSNfr2kRy4/scene.splinecode";
     }
     
     return null;
@@ -244,7 +245,7 @@ const Product = () => {
             </Button>
           </div>
 
-          {/* KOTAK VISUALISASI DIKECILKAN LAGI KHUSUS MOBILE & TABLET */}
+          {/* KOTAK VISUALISASI DIKECILKAN KHUSUS MOBILE & TABLET */}
           <div className="w-full h-[30vh] md:h-[38vh] lg:h-[75vh] relative rounded-3xl border-2 border-gray-100 bg-white overflow-hidden shadow-2xl group">
             
             {/* Tooltip Hotspot */}
@@ -291,7 +292,7 @@ const Product = () => {
                   className="max-h-full max-w-full object-contain drop-shadow-2xl animate-in zoom-in-95 duration-500" 
                   src={product?.image} 
                   alt={product?.title} 
-                />
+                  />
               </div>
             )}
           </div>
