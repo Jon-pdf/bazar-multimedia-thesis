@@ -219,7 +219,7 @@ const Product = () => {
 
           <div className="bg-indigo-50/80 p-6 rounded-2xl border-l-8 border-indigo-500 shadow-sm mx-auto max-w-2xl">
             <p className="text-lg text-gray-700 font-medium italic leading-relaxed">
-              "Nikmati audio premium dengan perbandingan visual 2D vs 3D. Objek penelitian A."
+              "Nikmati produk premium kami."
             </p>
           </div>
         </div>
